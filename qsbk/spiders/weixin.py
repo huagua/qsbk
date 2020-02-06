@@ -9,6 +9,7 @@ class WeixinSpider(scrapy.Spider):
     name = 'weixin'
     allowed_domains = ['wxapp-union.com']
     start_urls = ['http://www.wxapp-union.com/portal.php?mod=list&catid=1&page=1']
+    base_url = 'http://www.wxapp-union.com/'
 
     def parse(self, response):
         tiezis = response.xpath('//div[@class="mbox_list recommend_article_list cl"]')
@@ -19,4 +20,9 @@ class WeixinSpider(scrapy.Spider):
             time = tiezi.xpath('.//div[@class="recommend_article_list_info"]/text()').getall()
             item = QsbkItem(detail_url=detail_url, title=title, content=content, time=time)
             yield item
+        next_url = response.xpath('//div[@class="pg"]//a[last()]/@href').get()
+        if not next_url:
+            return
+        else:
+            yield scrapy.Request(next_url, callback=self.parse)
 
