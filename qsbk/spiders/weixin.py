@@ -14,8 +14,9 @@ class WeixinSpider(scrapy.Spider):
         tiezis = response.xpath('//div[@class="mbox_list recommend_article_list cl"]')
         for tiezi in tiezis:
             detail_url = tiezi.xpath('./a/@href').get()
-            title = tiezi.xpath('.//div[@class="mbox_list recommend_article_list cl"]//h3//text()').get()
+            title = tiezi.xpath('.//h3//text()').get()
             content = tiezi.xpath('.//div[@class="recommend_article_list_simple"]//text()').get()
-            item = QsbkItem(detail_url=detail_url, title=title, content=content)
+            time = tiezi.xpath('.//div[@class="recommend_article_list_info"]/text()').getall()
+            item = QsbkItem(detail_url=detail_url, title=title, content=content, time=time)
             yield item
 
